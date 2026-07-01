@@ -7,6 +7,7 @@ from alembic import context
 from app.core.config import settings
 from app.db.base import Base
 from app.models import health_centre  # noqa: F401  ensure models are registered
+from app.models import otp, refresh_token, session, user  # noqa: F401  ensure models are registered
 
 config = context.config
 if config.config_file_name is not None:

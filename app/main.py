@@ -37,6 +37,13 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         openapi_tags=[
             {"name": "system", "description": "Root, version, and probe endpoints."},
+            {
+                "name": "auth",
+                "description": (
+                    "Mobile OTP authentication: send/verify OTP, JWT access and refresh "
+                    "tokens, profile, and session management."
+                ),
+            },
             {"name": "health", "description": "Infrastructure dependency health checks."},
             {"name": "health-centres", "description": "Health centre directory operations."},
         ],

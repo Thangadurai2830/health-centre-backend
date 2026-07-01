@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -23,7 +24,10 @@ def register_exception_handlers(app: FastAPI) -> None:
     ) -> JSONResponse:
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={"error_code": "validation_error", "message": exc.errors()},
+            content={
+                "error_code": "validation_error",
+                "message": jsonable_encoder(exc.errors(), exclude={"ctx"}),
+            },
         )
 
     @app.exception_handler(Exception)

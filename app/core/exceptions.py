@@ -38,3 +38,8 @@ class ForbiddenError(AppError):
 class ConflictError(AppError):
     status_code = 409
     error_code = "conflict"
+
+
+class TooManyRequestsError(AppError):
+    status_code = 429
+    error_code = "rate_limited"

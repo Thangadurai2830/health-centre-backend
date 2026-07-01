@@ -51,6 +51,12 @@ class Settings(BaseSettings):
     # Rate limiting
     RATE_LIMIT_PER_MINUTE: int = 60
 
+    # OTP
+    OTP_LENGTH: int = 6
+    OTP_EXPIRE_MINUTES: int = 5
+    OTP_MAX_ATTEMPTS: int = 5
+    OTP_RESEND_COOLDOWN_SECONDS: int = 60
+
     # Logging
     LOG_LEVEL: str = "INFO"
 
