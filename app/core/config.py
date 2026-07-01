@@ -14,9 +14,17 @@ class Settings(BaseSettings):
 
     # App
     PROJECT_NAME: str = "SwasthyaSetu API"
+    APP_VERSION: str = "0.1.0"
     API_V1_PREFIX: str = "/api/v1"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     DEBUG: bool = False
+
+    # Trusted hosts - comma-separated list, e.g. "api.example.com,localhost"
+    ALLOWED_HOSTS: str = "*"
+
+    @property
+    def allowed_hosts(self) -> list[str]:
+        return [host.strip() for host in self.ALLOWED_HOSTS.split(",") if host.strip()]
 
     # Security
     SECRET_KEY: str

@@ -36,6 +36,16 @@ uvicorn app.main:app --reload
 
 Docs at `/docs` (disabled in production).
 
+### System endpoints
+
+- `GET /` — root/API identity
+- `GET /version` — name, version, environment
+- `GET /live` — liveness probe
+- `GET /ready` — readiness probe (checks Postgres + Redis)
+- `GET /api/v1/health` — app health
+- `GET /api/v1/health/database` — Postgres connectivity
+- `GET /api/v1/health/redis` — Redis connectivity
+
 ## Migrations
 
 ```bash
