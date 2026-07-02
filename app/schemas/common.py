@@ -1,4 +1,8 @@
+from typing import Generic, TypeVar
+
 from pydantic import BaseModel, Field
+
+T = TypeVar("T")
 
 
 class HealthCheckResponse(BaseModel):
@@ -35,3 +39,10 @@ class RootResponse(BaseModel):
 class ErrorResponse(BaseModel):
     error_code: str
     message: str
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: list[T]
+    total: int
+    limit: int
+    offset: int

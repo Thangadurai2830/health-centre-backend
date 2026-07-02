@@ -1,4 +1,6 @@
 import os
+import uuid
+from dataclasses import dataclass
 
 os.environ.setdefault("SECRET_KEY", "test-secret")
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/test")
@@ -8,13 +10,30 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from redis.asyncio import Redis
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import create_access_token
 from app.db import redis as redis_module
-from app.db.session import engine
+from app.db.session import engine, get_db
 from app.main import app
-from app.services import mock_otp_service
+from app.models.user import User, UserRole, UserStatus
+from app.services import mock_otp_service, session_service
 
-AUTH_TABLES = ("refresh_tokens", "sessions", "otps", "users")
+AUTH_TABLES = (
+    "staff_assignments",
+    "rooms",
+    "wards",
+    "health_centres",
+    "villages",
+    "blocks",
+    "districts",
+    "departments",
+    "specializations",
+    "refresh_tokens",
+    "sessions",
+    "otps",
+    "users",
+)
 
 
 @pytest.fixture
@@ -47,3 +66,58 @@ def sent_otps(monkeypatch):
 
     monkeypatch.setattr(mock_otp_service, "send_otp_sms", fake_send)
     return captured
+
+
+@pytest.fixture
+async def db_session() -> AsyncSession:
+    async for session in get_db():
+        yield session
+
+
+@dataclass
+class AuthedUser:
+    user: User
+    token: str
+
+    @property
+    def headers(self) -> dict[str, str]:
+        return {"Authorization": f"Bearer {self.token}"}
+
+
+@pytest.fixture
+def authed_client_factory(db_session: AsyncSession):
+    """Creates a User + Session directly in the DB and mints a matching access token.
+
+    Bypasses the OTP flow entirely so tests can quickly get a bearer token for a
+    user of any role, per the pattern used in tests/services/test_require_roles.py.
+    """
+
+    async def _make(
+        role: UserRole = UserRole.CITIZEN, *, mobile_number: str | None = None
+    ) -> AuthedUser:
+        mobile = mobile_number or f"9{uuid.uuid4().int % 10**9:09d}"
+        user = User(
+            mobile_number=mobile,
+            country_code="+91",
+            role=role,
+            status=UserStatus.ACTIVE,
+            is_verified=True,
+            token_version=0,
+        )
+        db_session.add(user)
+        await db_session.commit()
+        await db_session.refresh(user)
+
+        session = await session_service.create_session(
+            db_session, user_id=user.id, device=None, ip_address="127.0.0.1"
+        )
+
+        token = create_access_token(
+            str(user.id),
+            role=role.value,
+            session_id=str(session.id),
+            version=user.token_version,
+        )
+        return AuthedUser(user=user, token=token)
+
+    return _make

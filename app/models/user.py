@@ -25,9 +25,7 @@ class UserStatus(str, Enum):
 class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "users"
 
-    mobile_number: Mapped[str] = mapped_column(
-        String(15), nullable=False, unique=True, index=True
-    )
+    mobile_number: Mapped[str] = mapped_column(String(15), nullable=False, unique=True, index=True)
     country_code: Mapped[str] = mapped_column(String(5), nullable=False, default="+91")
     full_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)

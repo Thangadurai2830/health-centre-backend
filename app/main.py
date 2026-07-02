@@ -46,6 +46,21 @@ def create_app() -> FastAPI:
             },
             {"name": "health", "description": "Infrastructure dependency health checks."},
             {"name": "health-centres", "description": "Health centre directory operations."},
+            {"name": "districts", "description": "District master data management."},
+            {"name": "blocks", "description": "Block master data management."},
+            {"name": "villages", "description": "Village master data management."},
+            {"name": "departments", "description": "Global department catalog management."},
+            {
+                "name": "wards",
+                "description": "Ward management, tying departments to health centres.",
+            },
+            {"name": "rooms", "description": "Room management within wards."},
+            {"name": "specializations", "description": "Specialization catalog management."},
+            {
+                "name": "staff",
+                "description": "Staff assignment and transfer between health centres.",
+            },
+            {"name": "lookups", "description": "Lightweight flat lookup lists for dropdowns."},
         ],
     )
 

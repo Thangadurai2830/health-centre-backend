@@ -6,8 +6,21 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 from app.core.config import settings
 from app.db.base import Base
-from app.models import health_centre  # noqa: F401  ensure models are registered
-from app.models import otp, refresh_token, session, user  # noqa: F401  ensure models are registered
+from app.models import (  # noqa: F401  ensure models are registered
+    block,
+    department,
+    district,
+    health_centre,
+    otp,
+    refresh_token,
+    room,
+    session,
+    specialization,
+    staff_assignment,
+    user,
+    village,
+    ward,
+)
 
 config = context.config
 if config.config_file_name is not None:
